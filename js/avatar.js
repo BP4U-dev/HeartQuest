@@ -1,151 +1,174 @@
-// HeartQuest Avatar Customization Functions
+// HeartQuest Avatar System - Enhanced 3D Avatar Creation and Customization
 
-/**
- * Updates the skin color of the avatar
- * This function is called when the color picker value changes
- */
+// Create 3D avatar
+function createAvatar() {
+    const avatarGroup = new THREE.Group();
+    
+    // Head
+    const headGeometry = new THREE.SphereGeometry(0.15, 32, 32);
+    const headMaterial = new THREE.MeshLambertMaterial({ color: avatarSettings.skinColor });
+    const head = new THREE.Mesh(headGeometry, headMaterial);
+    head.position.y = 1.7;
+    head.castShadow = true;
+    avatarGroup.add(head);
+
+    // Body
+    const bodyGeometry = new THREE.CylinderGeometry(0.2, 0.25, 0.8, 8);
+    const bodyMaterial = new THREE.MeshLambertMaterial({ color: 0x4169E1 }); // Royal Blue shirt
+    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+    body.position.y = 1.2;
+    body.castShadow = true;
+    avatarGroup.add(body);
+
+    // Arms
+    const armGeometry = new THREE.CylinderGeometry(0.05, 0.08, 0.6, 8);
+    const armMaterial = new THREE.MeshLambertMaterial({ color: avatarSettings.skinColor });
+    
+    const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+    leftArm.position.set(-0.3, 1.2, 0);
+    leftArm.castShadow = true;
+    avatarGroup.add(leftArm);
+
+    const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+    rightArm.position.set(0.3, 1.2, 0);
+    rightArm.castShadow = true;
+    avatarGroup.add(rightArm);
+
+    // Legs
+    const legGeometry = new THREE.CylinderGeometry(0.08, 0.1, 0.8, 8);
+    const legMaterial = new THREE.MeshLambertMaterial({ color: 0x000080 }); // Navy pants
+    
+    const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
+    leftLeg.position.set(-0.1, 0.4, 0);
+    leftLeg.castShadow = true;
+    avatarGroup.add(leftLeg);
+
+    const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
+    rightLeg.position.set(0.1, 0.4, 0);
+    rightLeg.castShadow = true;
+    avatarGroup.add(rightLeg);
+
+    // Hair
+    if (avatarSettings.hairStyle !== 'bald') {
+        const hairGeometry = new THREE.SphereGeometry(0.18, 16, 16);
+        const hairMaterial = new THREE.MeshLambertMaterial({ color: avatarSettings.hairColor });
+        const hair = new THREE.Mesh(hairGeometry, hairMaterial);
+        hair.position.y = 1.75;
+        avatarGroup.add(hair);
+    }
+
+    // Scale based on height
+    const heightScale = avatarSettings.height / 1.75;
+    avatarGroup.scale.set(heightScale, heightScale, heightScale);
+
+    avatar = avatarGroup;
+    scene.add(avatar);
+}
+
+// Avatar customization functions
+function updateAvatar() {
+    avatarSettings.gender = document.getElementById('avatarGender').value;
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
+    }
+}
+
+function updateAvatarHeight() {
+    const height = document.getElementById('avatarHeight').value;
+    avatarSettings.height = parseFloat(height);
+    document.getElementById('heightValue').textContent = height + 'm';
+    
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
+    }
+}
+
+function updateAvatarBuild() {
+    const build = document.getElementById('avatarBuild').value;
+    avatarSettings.build = parseInt(build);
+    
+    const buildTypes = ['Slim', 'Athletic', 'Muscular'];
+    const buildIndex = Math.floor(build / 34);
+    document.getElementById('buildValue').textContent = buildTypes[buildIndex] || 'Athletic';
+    
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
+    }
+}
+
 function updateSkinColor() {
-    const skinColorPicker = document.getElementById('skinColor');
-    const selectedColor = skinColorPicker.value;
-    
-    // Log the selected color for debugging
-    console.log('Skin color updated to:', selectedColor);
-    
-    // Update avatar skin color (this would integrate with your 3D avatar system)
-    updateAvatarSkinColor(selectedColor);
-    
-    // Optional: Show visual feedback
-    showColorUpdateFeedback(selectedColor);
+    avatarSettings.skinColor = document.getElementById('skinColor').value;
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
+    }
 }
 
-/**
- * Updates the avatar's skin color in the 3D system
- * @param {string} color - The hex color value
- */
-function updateAvatarSkinColor(color) {
-    // This function would integrate with your 3D avatar system
-    // For now, we'll store the color in localStorage for persistence
-    localStorage.setItem('avatarSkinColor', color);
-    
-    // If you have a 3D avatar system, you would call the appropriate API here
-    // Example: avatarSystem.setSkinColor(color);
-    
-    console.log('Avatar skin color set to:', color);
+function updateHairStyle() {
+    avatarSettings.hairStyle = document.getElementById('hairStyle').value;
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
+    }
 }
 
-/**
- * Updates the hair color of the avatar
- * This function is called when the hair color picker value changes
- */
 function updateHairColor() {
-    const hairColorPicker = document.getElementById('hairColor');
-    const selectedColor = hairColorPicker.value;
-    
-    // Log the selected color for debugging
-    console.log('Hair color updated to:', selectedColor);
-    
-    // Update avatar hair color (this would integrate with your 3D avatar system)
-    updateAvatarHairColor(selectedColor);
-    
-    // Optional: Show visual feedback
-    showColorUpdateFeedback(selectedColor, 'Hair Color');
-}
-
-/**
- * Updates the avatar's hair color in the 3D system
- * @param {string} color - The hex color value
- */
-function updateAvatarHairColor(color) {
-    // This function would integrate with your 3D avatar system
-    // For now, we'll store the color in localStorage for persistence
-    localStorage.setItem('avatarHairColor', color);
-    
-    // If you have a 3D avatar system, you would call the appropriate API here
-    // Example: avatarSystem.setHairColor(color);
-    
-    console.log('Avatar hair color set to:', color);
-}
-
-/**
- * Shows visual feedback when color is updated
- * @param {string} color - The hex color value
- * @param {string} type - The type of color being updated
- */
-function showColorUpdateFeedback(color, type = 'Skin Color') {
-    // Create a temporary visual indicator
-    const feedback = document.createElement('div');
-    feedback.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${color};
-        color: white;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-weight: bold;
-        z-index: 1000;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        transition: opacity 0.3s ease;
-    `;
-    feedback.textContent = `${type}: ${color}`;
-    
-    document.body.appendChild(feedback);
-    
-    // Remove the feedback after 2 seconds
-    setTimeout(() => {
-        feedback.style.opacity = '0';
-        setTimeout(() => {
-            if (feedback.parentNode) {
-                feedback.parentNode.removeChild(feedback);
-            }
-        }, 300);
-    }, 2000);
-}
-
-/**
- * Loads saved avatar colors on page load
- */
-function loadSavedAvatarColors() {
-    // Load saved skin color
-    const savedSkinColor = localStorage.getItem('avatarSkinColor');
-    if (savedSkinColor) {
-        const skinColorPicker = document.getElementById('skinColor');
-        if (skinColorPicker) {
-            skinColorPicker.value = savedSkinColor;
-            console.log('Loaded saved skin color:', savedSkinColor);
-        }
-    }
-    
-    // Load saved hair color
-    const savedHairColor = localStorage.getItem('avatarHairColor');
-    if (savedHairColor) {
-        const hairColorPicker = document.getElementById('hairColor');
-        if (hairColorPicker) {
-            hairColorPicker.value = savedHairColor;
-            console.log('Loaded saved hair color:', savedHairColor);
-        }
+    avatarSettings.hairColor = document.getElementById('hairColor').value;
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
     }
 }
 
-// Initialize the avatar customization when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    loadSavedAvatarColors();
-    
-    // Add event listeners for skin color picker
-    const skinColorPicker = document.getElementById('skinColor');
-    if (skinColorPicker) {
-        // Add input event for real-time updates
-        skinColorPicker.addEventListener('input', function() {
-            updateAvatarSkinColor(this.value);
-        });
+function updateClothing() {
+    avatarSettings.clothingStyle = document.getElementById('clothingStyle').value;
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
     }
+}
+
+function saveAvatar() {
+    const avatarData = JSON.stringify(avatarSettings);
+    // In a real app, this would save to a database
+    alert('✅ Avatar saved successfully! In the full version, this will save to your profile.');
     
-    // Add event listeners for hair color picker
-    const hairColorPicker = document.getElementById('hairColor');
-    if (hairColorPicker) {
-        // Add input event for real-time updates
-        hairColorPicker.addEventListener('input', function() {
-            updateAvatarHairColor(this.value);
-        });
+    // Update stats
+    const xp = parseInt(document.getElementById('xpStat').textContent.replace(',', ''));
+    document.getElementById('xpStat').textContent = (xp + 100).toLocaleString();
+}
+
+function randomizeAvatar() {
+    // Randomize all avatar settings
+    const genders = ['male', 'female', 'non-binary'];
+    const hairStyles = ['short', 'medium', 'long', 'curly', 'braids'];
+    const clothingStyles = ['casual', 'formal', 'sporty', 'gothic', 'fantasy', 'futuristic'];
+    
+    avatarSettings.gender = genders[Math.floor(Math.random() * genders.length)];
+    avatarSettings.height = Math.random() * 0.5 + 1.5; // 1.5-2.0m
+    avatarSettings.build = Math.random() * 100;
+    avatarSettings.skinColor = `hsl(${Math.random() * 60 + 20}, ${Math.random() * 30 + 40}%, ${Math.random() * 30 + 40}%)`;
+    avatarSettings.hairStyle = hairStyles[Math.floor(Math.random() * hairStyles.length)];
+    avatarSettings.hairColor = `hsl(${Math.random() * 360}, ${Math.random() * 50 + 50}%, ${Math.random() * 40 + 20}%)`;
+    avatarSettings.clothingStyle = clothingStyles[Math.floor(Math.random() * clothingStyles.length)];
+
+    // Update UI elements
+    document.getElementById('avatarGender').value = avatarSettings.gender;
+    document.getElementById('avatarHeight').value = avatarSettings.height;
+    document.getElementById('avatarBuild').value = avatarSettings.build;
+    document.getElementById('skinColor').value = avatarSettings.skinColor;
+    document.getElementById('hairStyle').value = avatarSettings.hairStyle;
+    document.getElementById('hairColor').value = avatarSettings.hairColor;
+    document.getElementById('clothingStyle').value = avatarSettings.clothingStyle;
+
+    updateAvatarHeight();
+    updateAvatarBuild();
+
+    if (avatar) {
+        scene.remove(avatar);
+        createAvatar();
     }
-});
+}

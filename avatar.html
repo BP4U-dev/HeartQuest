@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Avatar Creator</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo">HeartQuest - Avatar Creator</div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
+                <div class="nav-item active">👤 Avatar</div>
+                <div class="nav-item" onclick="window.location.href='world.html'">🌍 Worlds</div>
+                <div class="nav-item" onclick="window.location.href='dating.html'">💕 Dating</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-container" id="sceneContainer"></div>
+
+    <div class="ui-overlay">
+        <!-- Avatar Customization Panel -->
+        <div class="control-panel" id="avatarPanel">
+            <div class="panel-section">
+                <h3 class="panel-title">👤 Avatar Creator</h3>
+
+                <div class="select-group">
+                    <label>Gender</label>
+                    <select id="avatarGender" onchange="updateAvatar()">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="slider-group">
+                    <label>Height: <span id="heightValue">1.75m</span></label>
+                    <input type="range" class="slider" id="avatarHeight" min="1.5" max="2.0" step="0.05"
+                        value="1.75" oninput="updateAvatarHeight()">
+                </div>
+
+                <div class="slider-group">
+                    <label>Build: <span id="buildValue">Athletic</span></label>
+                    <input type="range" class="slider" id="avatarBuild" min="0" max="100" value="50"
+                        oninput="updateAvatarBuild()">
+                </div>
+
+                <div class="slider-group">
+                    <label>Skin Tone:</label>
+                    <input type="color" class="color-picker" id="skinColor" value="#f4c2a1"
+                        onchange="updateSkinColor()">
+                </div>
+
+                <div class="select-group">
+                    <label>Hair Style</label>
+                    <select id="hairStyle" onchange="updateHairStyle()">
+                        <option value="short">Short</option>
+                        <option value="medium">Medium</option>
+                        <option value="long">Long</option>
+                        <option value="curly">Curly</option>
+                        <option value="braids">Braids</option>
+                        <option value="bald">Bald</option>
+                    </select>
+                </div>
+
+                <div class="slider-group">
+                    <label for="hairColor">Hair Color</label>
+                    <input type="color" class="color-picker" id="hairColor" value="#8b4513"
+                        onchange="updateHairColor()" aria-label="Hair Color">
+                </div>
+
+                <div class="select-group">
+                    <label>Clothing Style</label>
+                    <select id="clothingStyle" onchange="updateClothing()">
+                        <option value="casual">Casual</option>
+                        <option value="formal">Formal</option>
+                        <option value="sporty">Sporty</option>
+                        <option value="gothic">Gothic</option>
+                        <option value="fantasy">Fantasy</option>
+                        <option value="futuristic">Futuristic</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveAvatar()">💾 Save Avatar</button>
+                <button class="btn btn-success" onclick="randomizeAvatar()">🎲 Randomize</button>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="levelStat">12</div>
+                <div class="stat-label">Level</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-value" id="xpStat">2,456</div>
+                <div class="stat-label">XP</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-value" id="coinsStat">$15,240</div>
+                <div class="stat-label">V-Coins</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/main.js"></script>
+    <script src="js/avatar.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/vehicles.js"></script>
+</body>
+
+</html>
