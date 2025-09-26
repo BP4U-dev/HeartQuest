@@ -2,6 +2,14 @@
 
 // Global variables
 let scene, camera, renderer, avatar, currentWorld = 'paradise';
+let gameStats = {
+    level: 1,
+    xp: 0,
+    coins: 1000,
+    friends: 0,
+    matches: 0
+};
+
 let avatarSettings = {
     gender: 'male',
     height: 1.75,
@@ -47,51 +55,79 @@ function initializeApp() {
 
 // Initialize 3D scene
 function init3DScene() {
-    // Create scene
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87CEEB); // Sky blue
+    try {
+        // Create scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
 
-    // Create camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 5);
+        // Create camera
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 5);
 
-    // Create renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    document.getElementById('sceneContainer').appendChild(renderer.domElement);
+        // Create renderer
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('sceneContainer').appendChild(renderer.domElement);
 
-    // Add lighting
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-    scene.add(ambientLight);
+        // Add lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+        scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(50, 50, 50);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    scene.add(directionalLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(50, 50, 50);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 2048;
+        directionalLight.shadow.mapSize.height = 2048;
+        scene.add(directionalLight);
 
-    // Create avatar
-    createAvatar();
+        // Create avatar and world
+        createAvatar();
+        createWorld(currentWorld);
+        addControls();
+        
+        // Initialize game systems
+        initializeGameSystems();
+        
+        // Start render loop
+        animate();
+        
+        console.log('3D Scene initialized successfully');
+    } catch (error) {
+        console.error('Error initializing 3D scene:', error);
+        showNotification('Error loading 3D graphics. Some features may not work properly.');
+    }
+}
+
+// Initialize game systems
+function initializeGameSystems() {
+    // Load saved data
+    loadGameData();
     
-    // Create world environment
-    createWorld(currentWorld);
+    // Initialize authentication system
+    if (typeof AuthManager !== 'undefined') {
+        window.authManager = new AuthManager();
+    }
     
-    // Add controls
-    addControls();
+    // Initialize chat system
+    if (typeof ChatManager !== 'undefined') {
+        window.chatManager = new ChatManager();
+    }
     
-    // Start render loop
-    animate();
+    // Update UI with loaded stats
+    updateStatsDisplay();
 }
 
 // Add camera controls
 function addControls() {
     let isMouseDown = false;
     let mouseX = 0, mouseY = 0;
+    let keys = {};
     
+    // Mouse controls
     document.addEventListener('mousedown', (event) => {
+        if (event.target.closest('.ui-overlay')) return;
         isMouseDown = true;
         mouseX = event.clientX;
         mouseY = event.clientY;
@@ -102,13 +138,21 @@ function addControls() {
     });
     
     document.addEventListener('mousemove', (event) => {
-        if (!isMouseDown) return;
+        if (!isMouseDown || event.target.closest('.ui-overlay')) return;
         
         const deltaX = event.clientX - mouseX;
         const deltaY = event.clientY - mouseY;
         
-        camera.position.x += deltaX * 0.01;
-        camera.position.y -= deltaY * 0.01;
+        // Rotate camera around avatar
+        const radius = 5;
+        const theta = deltaX * 0.01;
+        const phi = deltaY * 0.01;
+        
+        camera.position.x = avatar.position.x + radius * Math.sin(theta);
+        camera.position.z = avatar.position.z + radius * Math.cos(theta);
+        camera.position.y = Math.max(1, camera.position.y - phi);
+        
+        camera.lookAt(avatar.position);
         
         mouseX = event.clientX;
         mouseY = event.clientY;
@@ -116,37 +160,59 @@ function addControls() {
     
     // Keyboard controls
     document.addEventListener('keydown', (event) => {
-        const speed = 0.5;
+        // Prevent movement if user is typing in an input
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+            return;
+        }
+        
+        keys[event.code] = true;
+        
+        const speed = 0.2;
+        const avatarPos = avatar.position;
+        
         switch(event.code) {
             case 'KeyW':
-                camera.position.z -= speed;
-                if (avatar) avatar.position.z -= speed;
+                avatarPos.z -= speed;
                 break;
             case 'KeyS':
-                camera.position.z += speed;
-                if (avatar) avatar.position.z += speed;
+                avatarPos.z += speed;
                 break;
             case 'KeyA':
-                camera.position.x -= speed;
-                if (avatar) avatar.position.x -= speed;
+                avatarPos.x -= speed;
                 break;
             case 'KeyD':
-                camera.position.x += speed;
-                if (avatar) avatar.position.x += speed;
+                avatarPos.x += speed;
                 break;
             case 'Space':
                 event.preventDefault();
-                camera.position.y += speed;
-                if (avatar) avatar.position.y += speed * 0.5;
+                // Simple jump
+                if (avatarPos.y <= 0.1) {
+                    avatarPos.y = 2;
+                    setTimeout(() => {
+                        if (avatar && avatarPos.y > 0) avatarPos.y = 0;
+                    }, 500);
+                }
                 break;
         }
+        
+        // Update camera to follow avatar
+        camera.position.x = avatarPos.x;
+        camera.position.z = avatarPos.z + 5;
+        camera.lookAt(avatarPos);
+    });
+    
+    document.addEventListener('keyup', (event) => {
+        keys[event.code] = false;
     });
 
     // Mouse wheel zoom
     document.addEventListener('wheel', (event) => {
+        if (event.target.closest('.ui-overlay')) return;
+        
         event.preventDefault();
         const zoomSpeed = 0.1;
-        camera.position.z += event.deltaY * zoomSpeed * 0.01;
+        const newZ = camera.position.z + event.deltaY * zoomSpeed * 0.01;
+        camera.position.z = Math.max(2, Math.min(10, newZ));
     });
 }
 
@@ -154,10 +220,31 @@ function addControls() {
 function animate() {
     requestAnimationFrame(animate);
     
-    // Animate fish in underwater world
+    try {
+        // Animate world-specific elements
+        animateWorldElements();
+
+        // Animate avatar breathing effect
+        if (avatar) {
+            avatar.rotation.y = Math.sin(Date.now() * 0.001) * 0.05;
+            const baseY = avatar.position.y || 0;
+            if (baseY <= 0.1) {
+                avatar.position.y = Math.sin(Date.now() * 0.002) * 0.02;
+            }
+        }
+
+        renderer.render(scene, camera);
+    } catch (error) {
+        console.error('Animation error:', error);
+    }
+}
+
+// Animate world-specific elements
+function animateWorldElements() {
     if (currentWorld === 'underwater') {
+        // Animate fish
         scene.traverse((child) => {
-            if (child.userData && child.userData.speed) {
+            if (child.userData && child.userData.speed && child.userData.direction !== undefined) {
                 child.userData.direction += (Math.random() - 0.5) * 0.1;
                 child.position.x += Math.cos(child.userData.direction) * child.userData.speed;
                 child.position.z += Math.sin(child.userData.direction) * child.userData.speed;
@@ -170,10 +257,10 @@ function animate() {
         });
     }
 
-    // Animate eagles in mountain world
     if (currentWorld === 'mountain') {
+        // Animate eagles
         scene.traverse((child) => {
-            if (child.userData && child.userData.radius) {
+            if (child.userData && child.userData.radius && child.userData.angle !== undefined) {
                 child.userData.angle += child.userData.speed;
                 child.position.x = Math.cos(child.userData.angle) * child.userData.radius;
                 child.position.z = Math.sin(child.userData.angle) * child.userData.radius;
@@ -181,57 +268,60 @@ function animate() {
             }
         });
     }
-
-    // Rotate avatar slightly for breathing effect
-    if (avatar) {
-        avatar.rotation.y = Math.sin(Date.now() * 0.001) * 0.1;
-        avatar.position.y = Math.sin(Date.now() * 0.002) * 0.05;
-    }
-
-    // Make camera follow avatar
-    if (avatar) {
-        camera.position.x = avatar.position.x;
-        camera.position.z = avatar.position.z + 5;
-        camera.lookAt(avatar.position);
-    }
-
-    renderer.render(scene, camera);
 }
 
 // UI Functions
 function switchMode(mode, evt) {
     // Hide all panels
-    document.getElementById('avatarPanel').style.display = 'none';
-    document.getElementById('worldPanel').style.display = 'none';
-    document.getElementById('socialPanel').style.display = 'none';
-    document.getElementById('questPanel').style.display = 'none';
+    const panels = ['avatarPanel', 'worldPanel', 'datingPanel', 'socialPanel', 'questPanel'];
+    panels.forEach(panelId => {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.style.display = 'none';
+    });
 
     // Update nav items
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
     });
+    
     if (evt && evt.target) {
         evt.target.classList.add('active');
+    } else {
+        // Find the nav item by text content
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.textContent.toLowerCase().includes(mode)) {
+                item.classList.add('active');
+            }
+        });
     }
 
     // Show selected panel
+    let panelToShow = null;
     switch(mode) {
         case 'avatar':
-            document.getElementById('avatarPanel').style.display = 'block';
+            panelToShow = 'avatarPanel';
             break;
         case 'world':
-            document.getElementById('worldPanel').style.display = 'block';
+            panelToShow = 'worldPanel';
             break;
         case 'dating':
+            panelToShow = 'datingPanel';
+            loadMatches();
+            break;
         case 'social':
-            document.getElementById('socialPanel').style.display = 'block';
+            panelToShow = 'socialPanel';
             break;
         case 'adventure':
-            document.getElementById('questPanel').style.display = 'block';
+            panelToShow = 'questPanel';
             break;
         case 'home':
             showHomeBuilder();
-            break;
+            return;
+    }
+    
+    if (panelToShow) {
+        const panel = document.getElementById(panelToShow);
+        if (panel) panel.style.display = 'block';
     }
 }
 
@@ -249,12 +339,8 @@ function findMatches() {
     
     showNotification(`💕 New Match Found!\n${randomMatch.name}, ${randomMatch.age}\nInterests: ${randomMatch.interests}\nCurrently in: ${randomMatch.world}`);
     
-    // Update stats
-    const currentMatches = parseInt(document.getElementById('matchesStat').textContent);
-    document.getElementById('matchesStat').textContent = currentMatches + 1;
-    
-    const friends = parseInt(document.getElementById('friendsStat').textContent);
-    document.getElementById('friendsStat').textContent = friends + 1;
+    updateStats('matches', 1);
+    updateStats('friends', 1);
 }
 
 function startVirtualDate() {
@@ -270,9 +356,7 @@ function startVirtualDate() {
     const randomDate = dateLocations[Math.floor(Math.random() * dateLocations.length)];
     showFloatingUI('Virtual Date Started!', `You're going on a ${randomDate}. Have fun exploring together! 💕`);
     
-    // Update stats
-    const dateCount = parseInt(document.getElementById('dateCount') ? document.getElementById('dateCount').textContent : '0');
-    // Note: dateCount element doesn't exist in this version, but keeping for consistency
+    updateStats('xp', 200);
 }
 
 function createFamily() {
@@ -292,9 +376,7 @@ function startNewQuest() {
     const randomQuest = quests[Math.floor(Math.random() * quests.length)];
     showNotification(`⚔️ New Quest Available!\n${randomQuest}\n\nReward: 500 XP + Special Item`);
     
-    // Update XP
-    const xp = parseInt(document.getElementById('xpStat').textContent.replace(',', ''));
-    document.getElementById('xpStat').textContent = (xp + 500).toLocaleString();
+    updateStats('xp', 500);
 }
 
 function handleChatInput(event) {
@@ -335,30 +417,171 @@ function showHomeBuilder() {
     showFloatingUI('🏠 Dream Home Builder', 'Design your perfect virtual home! Choose from thousands of furniture items, customize every detail, and invite friends over for house parties. Coming in the full version! 🎉');
 }
 
+// Load matches for dating panel
+function loadMatches() {
+    const matchesContainer = document.getElementById('matchesContainer');
+    if (!matchesContainer) return;
+    
+    const matches = [
+        { name: 'Emma', age: 24, avatar: '👩', interests: 'Adventure, Fantasy worlds', compatibility: 87 },
+        { name: 'Alex', age: 27, avatar: '👨', interests: 'Space exploration, Gaming', compatibility: 92 },
+        { name: 'Jordan', age: 25, avatar: '🧑', interests: 'Ocean diving, Marine life', compatibility: 76 }
+    ];
+    
+    matchesContainer.innerHTML = matches.map(match => `
+        <div class="match-card">
+            <div class="match-avatar">${match.avatar}</div>
+            <div class="match-name">${match.name}, ${match.age}</div>
+            <div class="match-details">${match.interests}</div>
+            <div class="compatibility-bar">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${match.compatibility}%;"></div>
+                </div>
+                <small>${match.compatibility}% Compatible</small>
+            </div>
+            <div class="match-actions">
+                <button class="btn-pass" onclick="passMatch('${match.name}')">❌ Pass</button>
+                <button class="btn-like" onclick="likeMatch('${match.name}')">💖 Like</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function findNewMatches() {
+    showNotification('🔍 Searching for new matches...');
+    setTimeout(() => {
+        loadMatches();
+        showNotification('✨ New matches found!');
+    }, 1500);
+}
+
+function likeMatch(name) {
+    showNotification(`💖 You liked ${name}! Waiting for their response...`);
+    updateStats('matches', 1);
+    
+    // Simulate match after delay
+    setTimeout(() => {
+        if (Math.random() > 0.5) {
+            showNotification(`🎉 It's a match with ${name}! Start chatting now!`);
+            updateStats('friends', 1);
+        } else {
+            showNotification(`${name} is thinking about it...`);
+        }
+    }, 3000);
+}
+
+function passMatch(name) {
+    showNotification(`👋 Passed on ${name}`);
+    loadMatches(); // Reload with new matches
+}
+
+// Stats management
+function updateStats(stat, value) {
+    gameStats[stat] = Math.max(0, gameStats[stat] + value);
+    
+    // Level up logic
+    if (stat === 'xp') {
+        const newLevel = Math.floor(gameStats.xp / 1000) + 1;
+        if (newLevel > gameStats.level) {
+            gameStats.level = newLevel;
+            gameStats.coins += 500; // Bonus coins for leveling up
+            showNotification(`🎉 Level Up! You are now level ${gameStats.level}!\n+500 V-Coins bonus!`);
+        }
+    }
+    
+    updateStatsDisplay();
+    saveGameData();
+}
+
+function updateStatsDisplay() {
+    const elements = {
+        levelStat: gameStats.level,
+        xpStat: gameStats.xp.toLocaleString(),
+        coinsStat: gameStats.coins.toLocaleString(),
+        friendsStat: gameStats.friends,
+        matchesStat: gameStats.matches
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    });
+}
+
+// Data persistence
+function saveGameData() {
+    try {
+        const saveData = {
+            gameStats,
+            avatarSettings,
+            currentWorld,
+            timestamp: Date.now()
+        };
+        localStorage.setItem('heartquest_save', JSON.stringify(saveData));
+    } catch (error) {
+        console.error('Error saving game data:', error);
+    }
+}
+
+function loadGameData() {
+    try {
+        const saveData = localStorage.getItem('heartquest_save');
+        if (saveData) {
+            const parsed = JSON.parse(saveData);
+            gameStats = { ...gameStats, ...parsed.gameStats };
+            avatarSettings = { ...avatarSettings, ...parsed.avatarSettings };
+            currentWorld = parsed.currentWorld || 'paradise';
+            
+            // Update UI with loaded avatar settings
+            updateAvatarUI();
+        }
+    } catch (error) {
+        console.error('Error loading game data:', error);
+    }
+}
+
+function updateAvatarUI() {
+    const elements = {
+        'avatarGender': avatarSettings.gender,
+        'avatarHeight': avatarSettings.height,
+        'avatarBuild': avatarSettings.build,
+        'skinColor': avatarSettings.skinColor,
+        'hairStyle': avatarSettings.hairStyle,
+        'hairColor': avatarSettings.hairColor,
+        'clothingStyle': avatarSettings.clothingStyle
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.value = value;
+            if (id === 'avatarHeight') {
+                document.getElementById('heightValue').textContent = value + 'm';
+            }
+            if (id === 'avatarBuild') {
+                const buildTypes = ['Slim', 'Athletic', 'Muscular'];
+                const buildIndex = Math.floor(value / 34);
+                document.getElementById('buildValue').textContent = buildTypes[buildIndex] || 'Athletic';
+            }
+        }
+    });
+}
+
 // Utility functions
 function showNotification(message) {
     const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        background: rgba(0,0,0,0.9);
-        color: white;
-        padding: 20px;
-        border-radius: 15px;
-        border: 2px solid #4ecdc4;
-        max-width: 300px;
-        z-index: 1000;
-        backdrop-filter: blur(15px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    `;
+    notification.className = 'notification';
     notification.textContent = message;
     document.body.appendChild(notification);
     
     setTimeout(() => {
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(100%)';
-        setTimeout(() => notification.remove(), 300);
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
     }, 4000);
 }
 
@@ -369,7 +592,7 @@ function showFloatingUI(title, content) {
     const floatingUI = document.createElement('div');
     floatingUI.className = 'floating-ui';
     floatingUI.innerHTML = `
-        <h2 style="margin-bottom: 15px; color: #4ecdc4;">${title}</h2>
+        <h2 style="margin-bottom: 15px; color: #CD5C5C;">${title}</h2>
         <p style="margin-bottom: 20px; line-height: 1.6;">${content}</p>
         <button class="btn btn-primary" onclick="this.parentElement.remove()">Got it!</button>
     `;
@@ -377,10 +600,30 @@ function showFloatingUI(title, content) {
 }
 
 function hideInfoPanel() {
-    document.getElementById('infoPanel').style.opacity = '0';
-    setTimeout(() => {
-        document.getElementById('infoPanel').style.display = 'none';
-    }, 500);
+    const infoPanel = document.getElementById('infoPanel');
+    if (infoPanel) {
+        infoPanel.style.opacity = '0';
+        setTimeout(() => {
+            infoPanel.style.display = 'none';
+        }, 500);
+    }
+}
+
+// Authentication helpers
+function showLogin() {
+    if (window.authManager) {
+        window.authManager.showLogin();
+    } else {
+        showNotification('Authentication system loading...');
+    }
+}
+
+function showRegister() {
+    if (window.authManager) {
+        window.authManager.showRegister();
+    } else {
+        showNotification('Authentication system loading...');
+    }
 }
 
 // Window resize handler
@@ -396,3 +639,22 @@ window.addEventListener('resize', () => {
 window.addEventListener('load', () => {
     initializeApp();
 });
+
+// Error handling for unhandled errors
+window.addEventListener('error', (event) => {
+    console.error('Global error:', event.error);
+    showNotification('An unexpected error occurred. Please refresh the page.');
+});
+
+// Export functions for other modules
+window.HeartQuest = {
+    updateStats,
+    showNotification,
+    gameStats,
+    avatarSettings,
+    currentWorld,
+    scene,
+    camera,
+    renderer,
+    avatar
+};

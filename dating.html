@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Dating Hub</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/tablet.css" />
+    <link rel="stylesheet" href="css/mobile.css" />
+    <!-- Three.js CDN for background scene (used by main.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><img src="assets/images/favicon.png" alt="HeartQuest" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;"> <span>HeartQuest - Dating</span></div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
+                <div class="nav-item" onclick="window.location.href='avatar.html'">👤 Avatar</div>
+                <div class="nav-item" onclick="window.location.href='world.html'">🌍 Worlds</div>
+                <div class="nav-item active">💕 Dating</div>
+                <div class="nav-item" onclick="window.location.href='chat.html'">💬 Chat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-container" id="sceneContainer"></div>
+
+    <div class="ui-overlay">
+        <!-- Dating & Social Panel -->
+        <div class="social-panel" id="socialPanel" style="display: block;">
+            <div class="panel-section">
+                <h3 class="panel-title">💕 Dating Hub</h3>
+
+                <button class="btn btn-primary" onclick="findMatches()">🔍 Find Matches</button>
+                <button class="btn btn-success" onclick="startVirtualDate()">🌹 Virtual Date</button>
+                <button class="btn btn-gold" onclick="createFamily()">👨‍👩‍👧‍👦 Start Family</button>
+
+                <div class="chat-container" id="chatContainer" style="margin-top:12px;">
+                    <div class="chat-message">
+                        <strong>System:</strong> Welcome to the Dating Hub! Click "Find Matches" to discover new connections.
+                    </div>
+                </div>
+
+                <input type="text" class="chat-input" placeholder="Type your message..." id="chatInput"
+                    onkeypress="handleChatInput(event)">
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="levelStat">12</div>
+                <div class="stat-label">Level</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-value" id="xpStat">2,456</div>
+                <div class="stat-label">XP</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-value" id="coinsStat">$15,240</div>
+                <div class="stat-label">V-Coins</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/avatar.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/vehicles.js"></script>
+</body>
+
+</html>
+

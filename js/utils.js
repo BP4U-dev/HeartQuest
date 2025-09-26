@@ -1,3 +1,29 @@
+// HeartQuest - Utilities
+(function(){
+    const Utils = {
+        qs(sel, root=document){ return root.querySelector(sel); },
+        qsa(sel, root=document){ return Array.from(root.querySelectorAll(sel)); },
+        on(el, ev, fn, opts){ el && el.addEventListener && el.addEventListener(ev, fn, opts); },
+        off(el, ev, fn, opts){ el && el.removeEventListener && el.removeEventListener(ev, fn, opts); },
+        debounce(fn, wait=200){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), wait); }; },
+        uuid(){ return 'xxxxxx-xxxx-4xxx-yxxx-xxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16)}); },
+        fmt(n){ try{ return Number(n).toLocaleString(); } catch(e){ return n; } },
+        tryJSON(str, def=null){ try{ return JSON.parse(str); } catch(e){ return def; } },
+        clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+    };
+
+    // PWA: register service worker if present
+    (function registerSW(){
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function(){
+                navigator.serviceWorker.register('/service-worker.js').catch(()=>{});
+            });
+        }
+    })();
+
+    window.Utils = Utils;
+})();
+
 // utils.js - Common Utility Functions
 // Helper functions, validators, formatters, and shared utilities
 

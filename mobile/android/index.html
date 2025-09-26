@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Android App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="icon" href="../../assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="../../css/style.css" />
+    <link rel="stylesheet" href="../../css/tablet.css" />
+    <link rel="stylesheet" href="../../css/mobile.css" />
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><img src="../../assets/images/favicon.png" alt="HeartQuest" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;"> <span>HeartQuest - Android</span></div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='../../index.html'">🏠 Web App</div>
+                <div class="nav-item" onclick="window.location.href='../../login.html'">🔐 Login</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-container" style="background:none;height:auto;min-height:100vh;"></div>
+
+    <div class="ui-overlay" style="pointer-events:none;">
+        <div class="info-panel" style="top:120px; max-width:700px; pointer-events:all;">
+            <h2 style="margin-bottom: 10px;">🤖 Install on Android</h2>
+            <p style="margin-bottom: 12px; opacity:0.9;">Use HeartQuest as a Progressive Web App (PWA) on Android, or download from the Play Store (coming soon).</p>
+
+            <div class="panel-section">
+                <div class="panel-title" style="margin-bottom:10px;">PWA Install</div>
+                <ol style="line-height:1.7; opacity:0.9;">
+                    <li>Open the main app: <a href="../../index.html">HeartQuest Web</a></li>
+                    <li>Tap the browser menu ••• and choose <strong>Add to Home screen</strong></li>
+                    <li>Launch HeartQuest from your home screen icon</li>
+                </ol>
+                <button class="btn btn-success" style="margin-top:10px;" onclick="window.location.href='../../index.html'">Open HeartQuest</button>
+            </div>
+
+            <div class="panel-section" style="margin-top:16px;">
+                <div class="panel-title" style="margin-bottom:10px;">Play Store</div>
+                <p style="opacity:0.9;">Play Store app listing is coming soon. You will be able to install the native wrapper from Google Play.</p>
+                <button class="btn" onclick="UI.showNotification('Play Store listing not yet available')">Check Status</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../js/ui.js"></script>
+</body>
+
+</html>
+

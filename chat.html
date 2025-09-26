@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Chat</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tablet.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><img src="assets/images/favicon.png" alt="HeartQuest" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;"> <span>HeartQuest - Chat</span></div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
+                <div class="nav-item" onclick="window.location.href='avatar.html'">👤 Avatar</div>
+                <div class="nav-item" onclick="window.location.href='world.html'">🌍 Worlds</div>
+                <div class="nav-item active">💬 Chat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-overlay">
+        <div class="info-panel" style="top:120px;">
+            <h2 style="margin-bottom: 10px;">💬 Welcome to HeartQuest Chat</h2>
+            <p style="margin-bottom: 10px;">Use the floating chat button at the bottom-right to open your conversations.</p>
+            <p style="margin-bottom: 0; opacity: 0.8; font-size: 0.95rem;">Tip: Click the button again to switch between chat list and the active chat.</p>
+        </div>
+    </div>
+
+    <!-- Chat system -->
+    <script src="js/chat.js"></script>
+    <script>
+        // Expose a global chat manager instance used by the UI templates in chat.js
+        window.chatManager = new ChatManager();
+    </script>
+</body>
+
+</html>
+

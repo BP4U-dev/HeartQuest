@@ -1,3 +1,26 @@
+// HeartQuest - Auth UI stubs
+(function(){
+    function showLogin() {
+        if (window.UI && typeof UI.showFloatingUI === 'function') {
+            UI.showFloatingUI('Login', 'Redirecting to login page...');
+            setTimeout(function(){ window.location.href = 'login.html'; }, 400);
+        } else {
+            window.location.href = 'login.html';
+        }
+    }
+
+    function showRegister() {
+        if (window.UI && typeof UI.showFloatingUI === 'function') {
+            UI.showFloatingUI('Create Account', 'Registration flow coming soon. For now, sign in from the Login page.');
+        } else {
+            alert('Registration coming soon. Please use Login for demo.');
+        }
+    }
+
+    window.showLogin = showLogin;
+    window.showRegister = showRegister;
+})();
+
 // HeartQuest - Authentication & User Management
 class AuthManager {
     constructor() {

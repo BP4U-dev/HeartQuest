@@ -1,122 +1,1168 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>HeartQuest - Avatar Creator</title>
-    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
-    <link rel="stylesheet" href="css/style.css" />
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avatar Creator - Love Connect 3D</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c1810, #8B4513, #CD853F);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { background: linear-gradient(135deg, #2c1810, #8B4513, #CD853F); }
+            50% { background: linear-gradient(135deg, #8B4513, #CD853F, #DEB887); }
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #CD853F, #DEB887, #F4A460);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #DEB887;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .avatar-preview {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(139, 69, 19, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .avatar-display {
+            width: 300px;
+            height: 400px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.2), rgba(205, 133, 63, 0.1));
+            border: 3px solid rgba(139, 69, 19, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+
+        .avatar-display:hover {
+            transform: scale(1.02);
+            box-shadow: 
+                inset 0 0 50px rgba(139, 69, 19, 0.2),
+                0 0 30px rgba(139, 69, 19, 0.4);
+        }
+
+        .avatar-info {
+            background: rgba(139, 69, 19, 0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .customization-panel {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(139, 69, 19, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            color: #CD853F;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(139, 69, 19, 0.4);
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: #DEB887;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .slider-group {
+            margin-bottom: 20px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(139, 69, 19, 0.3);
+            outline: none;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #CD853F, #DEB887);
+            cursor: pointer;
+            border: 2px solid #8B4513;
+            transition: all 0.3s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 15px rgba(205, 133, 63, 0.5);
+        }
+
+        .color-picker {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid rgba(139, 69, 19, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .color-picker:hover {
+            border-color: #CD853F;
+            box-shadow: 0 0 15px rgba(205, 133, 63, 0.3);
+        }
+
+        .select-group {
+            margin-bottom: 20px;
+        }
+
+        .select-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(139, 69, 19, 0.4);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover, select:focus {
+            border-color: #CD853F;
+            background: rgba(139, 69, 19, 0.2);
+            outline: none;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preset-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            cursor: pointer;
+            border: 3px solid transparent;
+            background: rgba(139, 69, 19, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .preset-avatar:hover {
+            border-color: #CD853F;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(205, 133, 63, 0.4);
+        }
+
+        .preset-avatar.selected {
+            border-color: #DEB887;
+            background: rgba(139, 69, 19, 0.4);
+            box-shadow: 0 0 25px rgba(222, 184, 135, 0.6);
+        }
+
+        .preset-name {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #DEB887;
+            white-space: nowrap;
+        }
+
+        .accessories-panel {
+            background: rgba(139, 69, 19, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(139, 69, 19, 0.5);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .accessories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .accessory-item {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .accessory-item:hover {
+            border-color: #CD853F;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .accessory-item.equipped {
+            border-color: #DEB887;
+            background: rgba(139, 69, 19, 0.3);
+            box-shadow: 0 0 15px rgba(222, 184, 135, 0.5);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #8B4513, #CD853F);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #DEB887, #F4A460);
+            color: #2c1810;
+            box-shadow: 0 4px 15px rgba(222, 184, 135, 0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(222, 184, 135, 0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #228B22, #32CD32);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(34, 139, 34, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 139, 34, 0.6);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .stats-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+        }
+
+        .stat-label {
+            color: #DEB887;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: #CD853F;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                max-width: 800px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+
+            .preset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .accessories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .avatar-display {
+                width: 250px;
+                height: 300px;
+                font-size: 6rem;
+            }
+        }
+    </style>
+</head>
 <body>
     <div class="header">
-        <div class="nav-container">
-            <div class="logo">HeartQuest - Avatar Creator</div>
-            <div class="nav-menu">
-                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
-                <div class="nav-item active">👤 Avatar</div>
-                <div class="nav-item" onclick="window.location.href='world.html'">🌍 Worlds</div>
-                <div class="nav-item" onclick="window.location.href='dating.html'">💕 Dating</div>
-            </div>
-        </div>
+        <h1>🎨 Avatar Creator</h1>
+        <p class="subtitle">Craft your perfect virtual identity</p>
     </div>
 
-    <div class="scene-container" id="sceneContainer"></div>
+    <div class="container">
+        <!-- Avatar Preview -->
+        <div class="avatar-preview">
+            <div class="avatar-display" id="avatarDisplay">👤</div>
+            <div class="avatar-info">
+                <h3 id="avatarName">My Avatar</h3>
+                <p id="avatarDescription">Customize your appearance</p>
+            </div>
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <span class="stat-label">Attractiveness:</span>
+                    <span class="stat-value" id="attractiveness">85%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Uniqueness:</span>
+                    <span class="stat-value" id="uniqueness">70%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Style Points:</span>
+                    <span class="stat-value" id="stylePoints">120</span>
+                </div>
+            </div>
+        </div>
 
-    <div class="ui-overlay">
-        <!-- Avatar Customization Panel -->
-        <div class="control-panel" id="avatarPanel">
-            <div class="panel-section">
-                <h3 class="panel-title">👤 Avatar Creator</h3>
+        <!-- Customization Panel -->
+        <div class="customization-panel">
+            <h2 class="panel-title">🎭 Customization</h2>
 
+            <!-- Avatar Presets -->
+            <div class="section">
+                <div class="section-title">Quick Presets</div>
+                <div class="preset-grid">
+                    <div class="preset-avatar" onclick="selectPreset('elegant')" data-preset="elegant">
+                        👩‍💼
+                        <div class="preset-name">Elegant</div>
+                    </div>
+                    <div class="preset-avatar" onclick="selectPreset('casual')" data-preset="casual">
+                        👨‍💻
+                        <div class="preset-name">Casual</div>
+                    </div>
+                    <div class="preset-avatar" onclick="selectPreset('sporty')" data-preset="sporty">
+                        🏃‍♀️
+                        <div class="preset-name">Sporty</div>
+                    </div>
+                    <div class="preset-avatar" onclick="selectPreset('artistic')" data-preset="artistic">
+                        👨‍🎨
+                        <div class="preset-name">Artistic</div>
+                    </div>
+                    <div class="preset-avatar" onclick="selectPreset('adventurous')" data-preset="adventurous">
+                        🧗‍♂️
+                        <div class="preset-name">Adventure</div>
+                    </div>
+                    <div class="preset-avatar" onclick="selectPreset('mysterious')" data-preset="mysterious">
+                        🕵️‍♀️
+                        <div class="preset-name">Mystery</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Features -->
+            <div class="section">
+                <div class="section-title">Basic Features</div>
+                
                 <div class="select-group">
                     <label>Gender</label>
-                    <select id="avatarGender" onchange="updateAvatar()">
-                        <option value="male">Male</option>
+                    <select id="gender" onchange="updateAvatar()">
+                        <option value="neutral">Non-binary</option>
                         <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option value="male">Male</option>
                     </select>
                 </div>
 
                 <div class="slider-group">
-                    <label>Height: <span id="heightValue">1.75m</span></label>
-                    <input type="range" class="slider" id="avatarHeight" min="1.5" max="2.0" step="0.05"
-                        value="1.75" oninput="updateAvatarHeight()">
+                    <label>Age: <span id="ageValue">25</span></label>
+                    <input type="range" class="slider" id="age" min="18" max="65" value="25" oninput="updateAge()">
+                </div>
+
+                <div class="slider-group">
+                    <label>Height: <span id="heightValue">5'8"</span></label>
+                    <input type="range" class="slider" id="height" min="60" max="78" value="68" oninput="updateHeight()">
                 </div>
 
                 <div class="slider-group">
                     <label>Build: <span id="buildValue">Athletic</span></label>
-                    <input type="range" class="slider" id="avatarBuild" min="0" max="100" value="50"
-                        oninput="updateAvatarBuild()">
+                    <input type="range" class="slider" id="build" min="0" max="100" value="50" oninput="updateBuild()">
                 </div>
 
                 <div class="slider-group">
-                    <label>Skin Tone:</label>
-                    <input type="color" class="color-picker" id="skinColor" value="#f4c2a1"
-                        onchange="updateSkinColor()">
+                    <label>Skin Tone</label>
+                    <input type="color" class="color-picker" id="skinTone" value="#f4c2a1" onchange="updateAvatar()">
                 </div>
+            </div>
 
+            <!-- Hair & Style -->
+            <div class="section">
+                <div class="section-title">Hair & Style</div>
+                
                 <div class="select-group">
                     <label>Hair Style</label>
-                    <select id="hairStyle" onchange="updateHairStyle()">
-                        <option value="short">Short</option>
-                        <option value="medium">Medium</option>
-                        <option value="long">Long</option>
+                    <select id="hairStyle" onchange="updateAvatar()">
+                        <option value="short">Short & Clean</option>
+                        <option value="medium">Medium Length</option>
+                        <option value="long">Long & Flowing</option>
                         <option value="curly">Curly</option>
-                        <option value="braids">Braids</option>
+                        <option value="wavy">Wavy</option>
+                        <option value="braids">Braided</option>
+                        <option value="pixie">Pixie Cut</option>
                         <option value="bald">Bald</option>
                     </select>
                 </div>
 
                 <div class="slider-group">
-                    <label for="hairColor">Hair Color</label>
-                    <input type="color" class="color-picker" id="hairColor" value="#8b4513"
-                        onchange="updateHairColor()" aria-label="Hair Color">
+                    <label>Hair Color</label>
+                    <input type="color" class="color-picker" id="hairColor" value="#8b4513" onchange="updateAvatar()">
                 </div>
 
                 <div class="select-group">
-                    <label>Clothing Style</label>
-                    <select id="clothingStyle" onchange="updateClothing()">
+                    <label>Eye Color</label>
+                    <select id="eyeColor" onchange="updateAvatar()">
+                        <option value="brown">Brown</option>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                        <option value="hazel">Hazel</option>
+                        <option value="gray">Gray</option>
+                        <option value="amber">Amber</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Clothing -->
+            <div class="section">
+                <div class="section-title">Clothing Style</div>
+                
+                <div class="select-group">
+                    <label>Style Category</label>
+                    <select id="clothingStyle" onchange="updateAvatar()">
                         <option value="casual">Casual</option>
                         <option value="formal">Formal</option>
+                        <option value="business">Business</option>
                         <option value="sporty">Sporty</option>
+                        <option value="bohemian">Bohemian</option>
                         <option value="gothic">Gothic</option>
-                        <option value="fantasy">Fantasy</option>
+                        <option value="vintage">Vintage</option>
                         <option value="futuristic">Futuristic</option>
                     </select>
                 </div>
 
+                <div class="slider-group">
+                    <label>Outfit Color</label>
+                    <input type="color" class="color-picker" id="outfitColor" value="#4169e1" onchange="updateAvatar()">
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="randomizeAvatar()">🎲 Randomize</button>
                 <button class="btn btn-primary" onclick="saveAvatar()">💾 Save Avatar</button>
-                <button class="btn btn-success" onclick="randomizeAvatar()">🎲 Randomize</button>
+                <button class="btn btn-success" onclick="enterWorld()">🌍 Enter World</button>
             </div>
         </div>
 
-        <!-- Stats Bar -->
-        <div class="stats-bar">
-            <div class="stat-item">
-                <div class="stat-value" id="levelStat">12</div>
-                <div class="stat-label">Level</div>
+        <!-- Accessories Panel -->
+        <div class="accessories-panel">
+            <h2 class="panel-title">✨ Accessories</h2>
+            
+            <div class="section">
+                <div class="section-title">Glasses & Eyewear</div>
+                <div class="accessories-grid">
+                    <div class="accessory-item" onclick="toggleAccessory('glasses1')" data-accessory="glasses1">👓</div>
+                    <div class="accessory-item" onclick="toggleAccessory('sunglasses')" data-accessory="sunglasses">🕶️</div>
+                    <div class="accessory-item" onclick="toggleAccessory('monocle')" data-accessory="monocle">🧐</div>
+                    <div class="accessory-item" onclick="toggleAccessory('glasses2')" data-accessory="glasses2">🤓</div>
+                </div>
             </div>
 
-            <div class="stat-item">
-                <div class="stat-value" id="xpStat">2,456</div>
-                <div class="stat-label">XP</div>
+            <div class="section">
+                <div class="section-title">Hats & Headwear</div>
+                <div class="accessories-grid">
+                    <div class="accessory-item" onclick="toggleAccessory('hat1')" data-accessory="hat1">🎩</div>
+                    <div class="accessory-item" onclick="toggleAccessory('hat2')" data-accessory="hat2">👒</div>
+                    <div class="accessory-item" onclick="toggleAccessory('cap')" data-accessory="cap">🧢</div>
+                    <div class="accessory-item" onclick="toggleAccessory('crown')" data-accessory="crown">👑</div>
+                </div>
             </div>
 
-            <div class="stat-item">
-                <div class="stat-value" id="coinsStat">$15,240</div>
-                <div class="stat-label">V-Coins</div>
+            <div class="section">
+                <div class="section-title">Jewelry</div>
+                <div class="accessories-grid">
+                    <div class="accessory-item" onclick="toggleAccessory('necklace')" data-accessory="necklace">📿</div>
+                    <div class="accessory-item" onclick="toggleAccessory('earrings')" data-accessory="earrings">👂</div>
+                    <div class="accessory-item" onclick="toggleAccessory('ring')" data-accessory="ring">💍</div>
+                    <div class="accessory-item" onclick="toggleAccessory('watch')" data-accessory="watch">⌚</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Special Items</div>
+                <div class="accessories-grid">
+                    <div class="accessory-item" onclick="toggleAccessory('flower')" data-accessory="flower">🌹</div>
+                    <div class="accessory-item" onclick="toggleAccessory('tie')" data-accessory="tie">👔</div>
+                    <div class="accessory-item" onclick="toggleAccessory('scarf')" data-accessory="scarf">🧣</div>
+                    <div class="accessory-item" onclick="toggleAccessory('bag')" data-accessory="bag">👜</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Avatar Name</div>
+                <input type="text" id="avatarNameInput" placeholder="Enter avatar name..." 
+                       style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid rgba(139,69,19,0.4); background: rgba(0,0,0,0.3); color: #e0e0e0; font-size: 1rem;"
+                       onchange="updateAvatarName()">
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Files -->
-    <script src="js/main.js"></script>
-    <script src="js/avatar.js"></script>
-    <script src="js/world.js"></script>
-    <script src="js/vehicles.js"></script>
-</body>
+    <script>
+        // Avatar state
+        let currentAvatar = {
+            emoji: '👤',
+            gender: 'neutral',
+            age: 25,
+            height: 68,
+            build: 50,
+            skinTone: '#f4c2a1',
+            hairStyle: 'medium',
+            hairColor: '#8b4513',
+            eyeColor: 'brown',
+            clothingStyle: 'casual',
+            outfitColor: '#4169e1',
+            accessories: [],
+            name: 'My Avatar',
+            attractiveness: 85,
+            uniqueness: 70,
+            stylePoints: 120
+        };
 
+        // Avatar presets
+        const presets = {
+            elegant: {
+                emoji: '👩‍💼',
+                gender: 'female',
+                age: 30,
+                height: 66,
+                build: 40,
+                skinTone: '#f4c2a1',
+                hairStyle: 'medium',
+                hairColor: '#8b4513',
+                eyeColor: 'brown',
+                clothingStyle: 'business',
+                outfitColor: '#2f4f4f',
+                accessories: ['glasses1', 'necklace'],
+                name: 'Elegant Professional',
+                attractiveness: 90,
+                uniqueness: 75,
+                stylePoints: 150
+            },
+            casual: {
+                emoji: '👨‍💻',
+                gender: 'male',
+                age: 25,
+                height: 70,
+                build: 60,
+                skinTone: '#deb887',
+                hairStyle: 'short',
+                hairColor: '#654321',
+                eyeColor: 'blue',
+                clothingStyle: 'casual',
+                outfitColor: '#4169e1',
+                accessories: ['glasses2'],
+                name: 'Casual Techie',
+                attractiveness: 80,
+                uniqueness: 65,
+                stylePoints: 100
+            },
+            sporty: {
+                emoji: '🏃‍♀️',
+                gender: 'female',
+                age: 23,
+                height: 65,
+                build: 80,
+                skinTone: '#cd853f',
+                hairStyle: 'short',
+                hairColor: '#000000',
+                eyeColor: 'green',
+                clothingStyle: 'sporty',
+                outfitColor: '#ff6347',
+                accessories: ['cap', 'watch'],
+                name: 'Athletic Star',
+                attractiveness: 88,
+                uniqueness: 70,
+                stylePoints: 130
+            },
+            artistic: {
+                emoji: '👨‍🎨',
+                gender: 'male',
+                age: 28,
+                height: 69,
+                build: 45,
+                skinTone: '#f5deb3',
+                hairStyle: 'long',
+                hairColor: '#8b4513',
+                eyeColor: 'hazel',
+                clothingStyle: 'bohemian',
+                outfitColor: '#9370db',
+                accessories: ['scarf', 'ring'],
+                name: 'Creative Soul',
+                attractiveness: 82,
+                uniqueness: 95,
+                stylePoints: 140
+            },
+            adventurous: {
+                emoji: '🧗‍♂️',
+                gender: 'male',
+                age: 32,
+                height: 72,
+                build: 75,
+                skinTone: '#daa520',
+                hairStyle: 'medium',
+                hairColor: '#654321',
+                eyeColor: 'amber',
+                clothingStyle: 'casual',
+                outfitColor: '#8fbc8f',
+                accessories: ['sunglasses', 'watch'],
+                name: 'Adventure Seeker',
+                attractiveness: 85,
+                uniqueness: 80,
+                stylePoints: 125
+            },
+            mysterious: {
+                emoji: '🕵️‍♀️',
+                gender: 'female',
+                age: 29,
+                height: 64,
+                build: 50,
+                skinTone: '#f4c2a1',
+                hairStyle: 'long',
+                hairColor: '#000000',
+                eyeColor: 'gray',
+                clothingStyle: 'gothic',
+                outfitColor: '#2f2f2f',
+                accessories: ['sunglasses', 'ring'],
+                name: 'Mysterious Lady',
+                attractiveness: 92,
+                uniqueness: 90,
+                stylePoints: 160
+            }
+        };
+
+        // Initialize avatar
+        function initializeAvatar() {
+            updateAvatarDisplay();
+            updateFormValues();
+            updateStats();
+        }
+
+        // Update avatar display
+        function updateAvatarDisplay() {
+            const display = document.getElementById('avatarDisplay');
+            display.textContent = currentAvatar.emoji;
+            
+            const name = document.getElementById('avatarName');
+            name.textContent = currentAvatar.name;
+            
+            const description = document.getElementById('avatarDescription');
+            description.textContent = getAvatarDescription();
+        }
+
+        // Get avatar description
+        function getAvatarDescription() {
+            const ageGroup = currentAvatar.age < 25 ? 'young' : currentAvatar.age < 35 ? 'mature' : 'experienced';
+            const heightDesc = currentAvatar.height < 66 ? 'petite' : currentAvatar.height > 70 ? 'tall' : 'average height';
+            const buildDesc = currentAvatar.build < 33 ? 'slim' : currentAvatar.build > 66 ? 'muscular' : 'athletic';
+            
+            return `A ${ageGroup}, ${heightDesc}, ${buildDesc} ${currentAvatar.gender} with ${currentAvatar.hairStyle} ${currentAvatar.hairColor === '#000000' ? 'black' : 'brown'} hair`;
+        }
+
+        // Update form values
+        function updateFormValues() {
+            document.getElementById('gender').value = currentAvatar.gender;
+            document.getElementById('age').value = currentAvatar.age;
+            document.getElementById('height').value = currentAvatar.height;
+            document.getElementById('build').value = currentAvatar.build;
+            document.getElementById('skinTone').value = currentAvatar.skinTone;
+            document.getElementById('hairStyle').value = currentAvatar.hairStyle;
+            document.getElementById('hairColor').value = currentAvatar.hairColor;
+            document.getElementById('eyeColor').value = currentAvatar.eyeColor;
+            document.getElementById('clothingStyle').value = currentAvatar.clothingStyle;
+            document.getElementById('outfitColor').value = currentAvatar.outfitColor;
+            document.getElementById('avatarNameInput').value = currentAvatar.name;
+
+            // Update display values
+            updateAge();
+            updateHeight();
+            updateBuild();
+
+            // Update accessories
+            updateAccessoryDisplay();
+        }
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('attractiveness').textContent = currentAvatar.attractiveness + '%';
+            document.getElementById('uniqueness').textContent = currentAvatar.uniqueness + '%';
+            document.getElementById('stylePoints').textContent = currentAvatar.stylePoints;
+        }
+
+        // Update age display
+        function updateAge() {
+            const age = document.getElementById('age').value;
+            document.getElementById('ageValue').textContent = age;
+            currentAvatar.age = parseInt(age);
+            calculateStats();
+        }
+
+        // Update height display
+        function updateHeight() {
+            const height = document.getElementById('height').value;
+            const feet = Math.floor(height / 12);
+            const inches = height % 12;
+            document.getElementById('heightValue').textContent = `${feet}'${inches}"`;
+            currentAvatar.height = parseInt(height);
+            calculateStats();
+        }
+
+        // Update build display
+        function updateBuild() {
+            const build = document.getElementById('build').value;
+            let buildText;
+            if (build < 25) buildText = 'Slim';
+            else if (build < 50) buildText = 'Lean';
+            else if (build < 75) buildText = 'Athletic';
+            else buildText = 'Muscular';
+            
+            document.getElementById('buildValue').textContent = buildText;
+            currentAvatar.build = parseInt(build);
+            calculateStats();
+        }
+
+        // Update avatar
+        function updateAvatar() {
+            currentAvatar.gender = document.getElementById('gender').value;
+            currentAvatar.skinTone = document.getElementById('skinTone').value;
+            currentAvatar.hairStyle = document.getElementById('hairStyle').value;
+            currentAvatar.hairColor = document.getElementById('hairColor').value;
+            currentAvatar.eyeColor = document.getElementById('eyeColor').value;
+            currentAvatar.clothingStyle = document.getElementById('clothingStyle').value;
+            currentAvatar.outfitColor = document.getElementById('outfitColor').value;
+
+            // Update emoji based on gender
+            updateAvatarEmoji();
+            updateAvatarDisplay();
+            calculateStats();
+        }
+
+        // Update avatar emoji
+        function updateAvatarEmoji() {
+            const style = currentAvatar.clothingStyle;
+            const gender = currentAvatar.gender;
+            
+            const emojiMap = {
+                'casual': gender === 'female' ? '👩' : gender === 'male' ? '👨' : '🧑',
+                'formal': gender === 'female' ? '👩‍💼' : gender === 'male' ? '👨‍💼' : '🧑‍💼',
+                'business': gender === 'female' ? '👩‍💼' : gender === 'male' ? '👨‍💼' : '🧑‍💼',
+                'sporty': gender === 'female' ? '🏃‍♀️' : gender === 'male' ? '🏃‍♂️' : '🏃',
+                'bohemian': gender === 'female' ? '👩‍🎨' : gender === 'male' ? '👨‍🎨' : '🧑‍🎨',
+                'gothic': gender === 'female' ? '🧙‍♀️' : gender === 'male' ? '🧙‍♂️' : '🧙',
+                'vintage': gender === 'female' ? '👸' : gender === 'male' ? '🤴' : '🧑‍🎭',
+                'futuristic': gender === 'female' ? '👩‍🚀' : gender === 'male' ? '👨‍🚀' : '🧑‍🚀'
+            };
+            
+            currentAvatar.emoji = emojiMap[style] || (gender === 'female' ? '👩' : gender === 'male' ? '👨' : '🧑');
+        }
+
+        // Calculate stats
+        function calculateStats() {
+            // Base attractiveness calculation
+            let attractiveness = 50;
+            attractiveness += (currentAvatar.build > 40 && currentAvatar.build < 70) ? 20 : 10;
+            attractiveness += currentAvatar.accessories.length * 5;
+            attractiveness += (currentAvatar.age > 22 && currentAvatar.age < 35) ? 15 : 5;
+            
+            // Uniqueness calculation
+            let uniqueness = 30;
+            uniqueness += currentAvatar.accessories.length * 8;
+            uniqueness += (currentAvatar.clothingStyle === 'gothic' || currentAvatar.clothingStyle === 'futuristic') ? 25 : 10;
+            uniqueness += (currentAvatar.hairStyle === 'braids' || currentAvatar.hairStyle === 'pixie') ? 15 : 5;
+            
+            // Style points calculation
+            let stylePoints = 50;
+            stylePoints += currentAvatar.accessories.length * 10;
+            stylePoints += (currentAvatar.clothingStyle === 'formal' || currentAvatar.clothingStyle === 'business') ? 30 : 15;
+            stylePoints += attractiveness * 0.5;
+            
+            currentAvatar.attractiveness = Math.min(100, attractiveness);
+            currentAvatar.uniqueness = Math.min(100, uniqueness);
+            currentAvatar.stylePoints = Math.floor(stylePoints);
+            
+            updateStats();
+        }
+
+        // Select preset
+        function selectPreset(presetName) {
+            // Remove previous selection
+            document.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
+            
+            // Add selection to clicked preset
+            document.querySelector(`[data-preset="${presetName}"]`).classList.add('selected');
+            
+            // Apply preset
+            currentAvatar = { ...presets[presetName] };
+            updateFormValues();
+            updateAvatarDisplay();
+            updateStats();
+        }
+
+        // Toggle accessory
+        function toggleAccessory(accessoryId) {
+            const element = document.querySelector(`[data-accessory="${accessoryId}"]`);
+            const index = currentAvatar.accessories.indexOf(accessoryId);
+            
+            if (index === -1) {
+                currentAvatar.accessories.push(accessoryId);
+                element.classList.add('equipped');
+            } else {
+                currentAvatar.accessories.splice(index, 1);
+                element.classList.remove('equipped');
+            }
+            
+            calculateStats();
+        }
+
+        // Update accessory display
+        function updateAccessoryDisplay() {
+            // Clear all equipped states
+            document.querySelectorAll('.accessory-item').forEach(el => el.classList.remove('equipped'));
+            
+            // Set equipped states
+            currentAvatar.accessories.forEach(accessoryId => {
+                const element = document.querySelector(`[data-accessory="${accessoryId}"]`);
+                if (element) {
+                    element.classList.add('equipped');
+                }
+            });
+        }
+
+        // Update avatar name
+        function updateAvatarName() {
+            const nameInput = document.getElementById('avatarNameInput');
+            currentAvatar.name = nameInput.value || 'My Avatar';
+            updateAvatarDisplay();
+        }
+
+        // Randomize avatar
+        function randomizeAvatar() {
+            const genders = ['neutral', 'female', 'male'];
+            const hairStyles = ['short', 'medium', 'long', 'curly', 'wavy', 'braids', 'pixie'];
+            const eyeColors = ['brown', 'blue', 'green', 'hazel', 'gray', 'amber'];
+            const clothingStyles = ['casual', 'formal', 'business', 'sporty', 'bohemian', 'gothic', 'vintage', 'futuristic'];
+            const accessories = ['glasses1', 'sunglasses', 'hat1', 'hat2', 'cap', 'crown', 'necklace', 'earrings', 'ring', 'watch', 'flower', 'tie', 'scarf', 'bag'];
+
+            currentAvatar = {
+                gender: genders[Math.floor(Math.random() * genders.length)],
+                age: Math.floor(Math.random() * 47) + 18,
+                height: Math.floor(Math.random() * 18) + 60,
+                build: Math.floor(Math.random() * 100),
+                skinTone: `hsl(${Math.floor(Math.random() * 60) + 20}, 30%, ${Math.floor(Math.random() * 40) + 40}%)`,
+                hairStyle: hairStyles[Math.floor(Math.random() * hairStyles.length)],
+                hairColor: `hsl(${Math.floor(Math.random() * 60)}, ${Math.floor(Math.random() * 50) + 30}%, ${Math.floor(Math.random() * 40) + 20}%)`,
+                eyeColor: eyeColors[Math.floor(Math.random() * eyeColors.length)],
+                clothingStyle: clothingStyles[Math.floor(Math.random() * clothingStyles.length)],
+                outfitColor: `hsl(${Math.floor(Math.random() * 360)}, ${Math.floor(Math.random() * 50) + 40}%, ${Math.floor(Math.random() * 40) + 30}%)`,
+                accessories: [],
+                name: `Random Avatar ${Math.floor(Math.random() * 1000)}`,
+                attractiveness: 85,
+                uniqueness: 70,
+                stylePoints: 120
+            };
+
+            // Add random accessories
+            const numAccessories = Math.floor(Math.random() * 4);
+            for (let i = 0; i < numAccessories; i++) {
+                const randomAccessory = accessories[Math.floor(Math.random() * accessories.length)];
+                if (!currentAvatar.accessories.includes(randomAccessory)) {
+                    currentAvatar.accessories.push(randomAccessory);
+                }
+            }
+
+            updateAvatarEmoji();
+            updateFormValues();
+            updateAvatarDisplay();
+            calculateStats();
+        }
+
+        // Save avatar
+        function saveAvatar() {
+            const avatarData = JSON.stringify(currentAvatar);
+            localStorage.setItem('loveConnect3D_avatar', avatarData);
+            
+            // Show success animation
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Saved!';
+            btn.style.background = 'linear-gradient(45deg, #228B22, #32CD32)';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = 'linear-gradient(45deg, #8B4513, #CD853F)';
+            }, 2000);
+        }
+
+        // Enter world
+        function enterWorld() {
+            saveAvatar();
+            
+            // Create confirmation modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2000;
+                backdrop-filter: blur(10px);
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, rgba(139, 69, 19, 0.9), rgba(205, 133, 63, 0.8));
+                    padding: 40px;
+                    border-radius: 20px;
+                    text-align: center;
+                    border: 2px solid #CD853F;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                    max-width: 500px;
+                    backdrop-filter: blur(20px);
+                ">
+                    <h2 style="color: #DEB887; margin-bottom: 20px; font-size: 2rem;">
+                        🌟 Welcome to Love Connect 3D! 🌟
+                    </h2>
+                    <div style="font-size: 4rem; margin: 20px 0;">
+                        ${currentAvatar.emoji}
+                    </div>
+                    <p style="color: #e0e0e0; margin-bottom: 30px; font-size: 1.1rem;">
+                        Your avatar "${currentAvatar.name}" is ready to explore the virtual world!
+                    </p>
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                style="background: linear-gradient(45deg, #8B4513, #CD853F); color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-weight: bold;">
+                            🏠 Stay Here
+                        </button>
+                        <button onclick="window.location.href='index.html'" 
+                                style="background: linear-gradient(45deg, #228B22, #32CD32); color: white; border: none; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-weight: bold;">
+                            🌍 Enter World
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        // Load saved avatar on page load
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('loveConnect3D_avatar');
+            if (saved) {
+                try {
+                    currentAvatar = JSON.parse(saved);
+                } catch (e) {
+                    console.log('Could not load saved avatar');
+                }
+            }
+            initializeAvatar();
+        });
+
+        // Add floating particles animation
+        function createParticles() {
+            const particles = document.createElement('div');
+            particles.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+            `;
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 4px;
+                    height: 4px;
+                    background: rgba(205, 133, 63, 0.6);
+                    border-radius: 50%;
+                    left: ${Math.random() * 100}%;
+                    top: ${Math.random() * 100}%;
+                    animation: float ${Math.random() * 10 + 10}s infinite linear;
+                `;
+                particles.appendChild(particle);
+            }
+            
+            document.body.appendChild(particles);
+        }
+
+        // Add CSS for particle animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+                10% { opacity: 1; }
+                90% { opacity: 1; }
+                100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize particles
+        createParticles();
+    </script>
+</body>
 </html>

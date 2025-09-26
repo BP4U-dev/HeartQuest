@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Home Builder</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tablet.css">
+    <link rel="stylesheet" href="css/mobile.css">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><img src="assets/images/favicon.png" alt="HeartQuest" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;"> <span>HeartQuest - Home Builder</span></div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
+                <div class="nav-item" onclick="window.location.href='avatar.html'">👤 Avatar</div>
+                <div class="nav-item" onclick="window.location.href='world.html'">🌍 Worlds</div>
+                <div class="nav-item active">🏗️ Builder</div>
+                <div class="nav-item" onclick="window.location.href='dating.html'">💕 Dating</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-container" id="sceneContainer"></div>
+
+    <div class="ui-overlay">
+        <!-- Home Builder Panel -->
+        <div class="control-panel" style="right:auto; left:20px; top:100px;" id="builderPanel">
+            <div class="panel-section">
+                <h3 class="panel-title">🏠 Dream Home Builder</h3>
+
+                <div class="select-group">
+                    <label>Home Style</label>
+                    <select id="homeStyle">
+                        <option value="modern">Modern</option>
+                        <option value="villa">Villa</option>
+                        <option value="cabin">Cabin</option>
+                        <option value="castle">Castle</option>
+                        <option value="futuristic">Futuristic</option>
+                    </select>
+                </div>
+
+                <div class="select-group">
+                    <label>Lot Location</label>
+                    <select id="lotWorld">
+                        <option value="paradise">Paradise Island</option>
+                        <option value="city">Neon City</option>
+                        <option value="fantasy">Fantasy Kingdom</option>
+                        <option value="space">Space Station</option>
+                        <option value="underwater">Underwater City</option>
+                        <option value="mountain">Mountain Peak</option>
+                    </select>
+                </div>
+
+                <div class="slider-group">
+                    <label>Floors: <span id="floorsValue">2</span></label>
+                    <input type="range" class="slider" id="floors" min="1" max="5" value="2"
+                           oninput="document.getElementById('floorsValue').textContent=this.value">
+                </div>
+
+                <div class="slider-group">
+                    <label>Rooms: <span id="roomsValue">6</span></label>
+                    <input type="range" class="slider" id="rooms" min="1" max="20" value="6"
+                           oninput="document.getElementById('roomsValue').textContent=this.value">
+                </div>
+
+                <div class="slider-group">
+                    <label>Yard Size: <span id="yardValue">Medium</span></label>
+                    <input type="range" class="slider" id="yard" min="0" max="100" value="50"
+                           oninput="document.getElementById('yardValue').textContent = (this.value<34?'Small':(this.value<67?'Medium':'Large'))">
+                </div>
+
+                <button class="btn btn-primary" onclick="applyHomeLot()">📍 Place Lot</button>
+                <button class="btn btn-success" onclick="showHomeBuilder()">🗺️ Open Builder Tips</button>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-value" id="levelStat">12</div>
+                <div class="stat-label">Level</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-value" id="xpStat">2,456</div>
+                <div class="stat-label">XP</div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-value" id="coinsStat">$15,240</div>
+                <div class="stat-label">V-Coins</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function applyHomeLot() {
+            const world = document.getElementById('lotWorld').value;
+            if (typeof teleportToWorld === 'function') {
+                teleportToWorld(world);
+            }
+            // Simple placeholder pad where the house would be placed
+            if (window.scene && window.THREE) {
+                const pad = new THREE.Mesh(
+                    new THREE.CylinderGeometry(4, 4, 0.4, 24),
+                    new THREE.MeshLambertMaterial({ color: 0x999999 })
+                );
+                pad.position.set(avatar ? avatar.position.x + 6 : 6, 0.2, avatar ? avatar.position.z : 0);
+                pad.receiveShadow = true;
+                scene.add(pad);
+                showNotification('🏗️ Lot placed! Building tools coming soon.');
+            }
+        }
+    </script>
+
+    <!-- JavaScript Files -->
+    <script src="js/main.js"></script>
+    <script src="js/avatar.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/vehicles.js"></script>
+</body>
+
+</html>
+

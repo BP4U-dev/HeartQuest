@@ -1,0 +1,31 @@
+/* HeartQuest - Tablet overrides */
+
+/* Tablets 481px - 1024px */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .control-panel, .world-selector, .social-panel, .adventure-quest {
+        border-radius: 18px;
+        max-height: 70vh;
+        padding: 20px;
+    }
+
+    .world-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .btn {
+        min-width: 130px;
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+
+    .stats-bar {
+        padding: 12px 22px;
+        gap: 22px;
+    }
+
+    .nav-menu {
+        gap: 14px;
+    }
+}
+
+

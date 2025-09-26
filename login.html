@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Login</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><img src="assets/images/favicon.png" alt="HeartQuest" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;"> <span>HeartQuest - Login</span></div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
+                <div class="nav-item" onclick="window.location.href='profile.html'">👤 Profile</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-container" style="background:none;height:auto;min-height:100vh;"></div>
+
+    <div class="ui-overlay" style="pointer-events:none;">
+        <div class="info-panel" style="top:120px; width: 420px; pointer-events:all;">
+            <h2 style="margin-bottom: 10px;">🔐 Sign in to HeartQuest</h2>
+            <p style="margin-bottom: 16px; opacity:0.9;">Welcome back! Continue your adventures.</p>
+
+            <form id="loginForm" onsubmit="return false;">
+                <div class="select-group">
+                    <label>Email</label>
+                    <input id="email" type="email" required placeholder="you@example.com" style="width:100%; padding:12px; border-radius:12px; border:2px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06); color:white;">
+                </div>
+                <div class="select-group">
+                    <label>Password</label>
+                    <input id="password" type="password" required placeholder="••••••••" minlength="6" style="width:100%; padding:12px; border-radius:12px; border:2px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06); color:white;">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; opacity:0.8;"><input id="remember" type="checkbox"> Remember me</label>
+                    <a href="#" onclick="UI.showNotification('Password reset link sent (demo)')" style="font-size:0.9rem;">Forgot?</a>
+                </div>
+                <div style="margin-top:16px; display:flex; gap:10px;">
+                    <button class="btn btn-success" onclick="loginUser()">Sign In</button>
+                    <button class="btn" type="button" onclick="UI.showFloatingUI('Create Account', 'Registration is coming soon!')">Create Account</button>
+                </div>
+            </form>
+
+            <div style="margin-top:16px; display:flex; gap:10px;">
+                <button class="btn btn-primary" onclick="thirdPartyLogin('google')">Continue with Google</button>
+                <button class="btn btn-primary" onclick="thirdPartyLogin('apple')">Continue with Apple</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/ui.js"></script>
+    <script>
+        function loginUser() {
+            const email = document.getElementById('email').value.trim();
+            const pass = document.getElementById('password').value;
+            if (!email || !pass) {
+                UI.showNotification('Please enter email and password');
+                return;
+            }
+            // Demo auth: accept any credentials
+            UI.showNotification('✅ Signed in');
+            localStorage.setItem('hq_user_email', email);
+            setTimeout(() => window.location.href = 'index.html', 600);
+        }
+
+        function thirdPartyLogin(provider) {
+            UI.showNotification('Redirecting to ' + provider + ' (demo)');
+            setTimeout(() => window.location.href = 'index.html', 600);
+        }
+    </script>
+</body>
+
+</html>
+

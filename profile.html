@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>HeartQuest - Profile</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/tablet.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo"><img src="assets/images/favicon.png" alt="HeartQuest" style="width:24px;height:24px;margin-right:8px;vertical-align:middle;"> <span>HeartQuest - Profile</span></div>
+            <div class="nav-menu">
+                <div class="nav-item" onclick="window.location.href='index.html'">🏠 Home</div>
+                <div class="nav-item" onclick="window.location.href='avatar.html'">👤 Avatar</div>
+                <div class="nav-item" onclick="window.location.href='world.html'">🌍 Worlds</div>
+                <div class="nav-item" onclick="window.location.href='chat.html'">💬 Chat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scene-container" style="background:none;height:auto;min-height:100vh;"></div>
+
+    <div class="ui-overlay" style="pointer-events:none;">
+        <div class="info-panel" style="top:120px; max-width:900px; pointer-events:all;">
+            <h2 style="margin-bottom: 10px;">👤 Your Profile</h2>
+            <p style="margin-bottom: 20px; opacity:0.9;">View and customize your HeartQuest identity.</p>
+
+            <div style="display:flex; gap:20px; flex-wrap:wrap; align-items:stretch;">
+                <div style="flex:1; min-width:260px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px;">
+                    <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                        <div style="width:64px; height:64px; border-radius:50%; background:linear-gradient(45deg,#8B3A3A,#CD5C5C); display:flex; align-items:center; justify-content:center; font-weight:700;">HQ</div>
+                        <div>
+                            <div style="font-weight:700; font-size:1.1rem;">Player One</div>
+                            <div style="font-size:0.9rem; opacity:0.8;">@heartquester</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                        <div class="stat-item">
+                            <div class="stat-value" id="levelStat">12</div>
+                            <div class="stat-label">Level</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="xpStat">2,456</div>
+                            <div class="stat-label">XP</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="coinsStat">$15,240</div>
+                            <div class="stat-label">V-Coins</div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px;">
+                        <div class="stat-item">
+                            <div class="stat-value" id="friendsStat">47</div>
+                            <div class="stat-label">Friends</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="matchesStat">12</div>
+                            <div class="stat-label">Matches</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="flex:2; min-width:360px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:16px;">
+                    <div class="panel-title" style="margin-bottom:12px;">✨ About You</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                        <div>
+                            <div style="opacity:0.8; font-size:0.9rem; margin-bottom:6px;">Bio</div>
+                            <div id="profileBio" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px; min-height:70px;">Adventurer, dreamer, and dragon rider. Always up for a quest.</div>
+                        </div>
+                        <div>
+                            <div style="opacity:0.8; font-size:0.9rem; margin-bottom:6px;">Interests</div>
+                            <div id="profileInterests" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px; min-height:70px;">Fantasy worlds, Neon nights, Underwater expeditions</div>
+                        </div>
+                        <div>
+                            <div style="opacity:0.8; font-size:0.9rem; margin-bottom:6px;">Preferred Worlds</div>
+                            <div id="profileWorlds" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px; min-height:70px;">🏰 Fantasy Kingdom, 🏙️ Neon City</div>
+                        </div>
+                        <div>
+                            <div style="opacity:0.8; font-size:0.9rem; margin-bottom:6px;">Relationship Goals</div>
+                            <div id="profileGoals" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px; min-height:70px;">Adventures together, build a dream home, start a family</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:10px;">
+                        <button class="btn btn-primary" onclick="window.location.href='avatar.html'">✏️ Edit Avatar</button>
+                        <button class="btn btn-success" onclick="UI.showFloatingUI('Edit Profile', 'Profile editor will let you update your bio, interests, and goals. Coming soon!')">📝 Edit Profile</button>
+                        <button class="btn btn-gold" onclick="UI.showNotification('💕 Finding matches for you...'); setTimeout(()=>UI.showFloatingUI('Matches', 'We found 3 new compatible matches!'), 800)">💕 Find Matches</button>
+                        <button class="btn" onclick="UI.showFloatingUI('Share Profile', 'A shareable profile link will be available here.')">🔗 Share</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/ui.js"></script>
+</body>
+
+</html>
+

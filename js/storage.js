@@ -1,3 +1,16 @@
+// HeartQuest - Storage helpers
+(function(){
+    const Storage = {
+        get(key, def=null){
+            try { const v = localStorage.getItem(key); return v===null?def:JSON.parse(v); } catch(e){ return def; }
+        },
+        set(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} },
+        del(key){ try { localStorage.removeItem(key); } catch(e){} },
+        has(key){ try { return localStorage.getItem(key) !== null; } catch(e){ return false; } }
+    };
+    window.Store = Storage;
+})();
+
 // storage.js - Local Storage Management System
 // Handles user preferences, avatar data, progress saving, and game state persistence
 
