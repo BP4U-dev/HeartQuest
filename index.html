@@ -1,135 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>HeartQuest</title>
-  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
+    <meta charset="UTF-8" />
+    <title>HeartQuest</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/x-icon" />
 </head>
+
+
 <body>
-    🌍 Loading HeartQuest...
-   
-        Initializing 3D World...
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-text">🌍 Loading HeartQuest...</div>
 
-        HeartQuest
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
 
-        👤 Avatar
-        🌍 Worlds
-        💕 Dating
-        🏠 Home
-        ⚔️ Quest
-        💬 Social
+        <div style="margin-top: 20px; font-size: 1.1rem; opacity:0.8;" id="loadingStatus">
+            Initializing 3D World...
+        </div>
 
-        <!-- Avatar Customization Panel -->
-         <h3>👤 Avatar Creator</h3>
+        <div class="header">
+            <div class="nav-container">
+                <div class="logo">HeartQuest</div>
+                <div class="nav-menu">
+                    <div class="nav-item active" onclick="switchMode('avatar')">👤 Avatar</div>
+                    <div class="nav-item" onclick="switchMode('world')">🌍 Worlds</div>
+                    <div class="nav-item" onclick="switchMode('dating')">💕 Dating</div>
+                    <div class="nav-item" onclick="switchMode('home')">🏠 Home</div>
+                    <div class="nav-item" onclick="switchMode('adventure')">⚔️ Quest</div>
+                    <div class="nav-item" onclick="switchMode('social')">💬 Social</div>
+                </div>
+            </div>
+        </div>
 
-         <label>Gender</label>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Other</option>
+        <div class="scene-container" id="sceneContainer"></div>
 
-         <label>Build: Athletic</label>
+        <div class="ui-overlay">
 
-         <label>Skin Tone:</label>
+            <!-- Avatar Customization Panel -->
+            <div class="control-panel" id="avatarPanel">
+                <div class="panel-section">
+                    <h3 class="panel-title">👤 Avatar Creator</h3>
 
-         <label>Hair Style</label>
-            <option>Short</option>
-            <option>Medium</option>
-            <option>Long</option>
-            <option>Curly</option>
-            <option>Braids</option>
-            <option>Bald</option>
+                    <div class="select-group">
+                        <label>Gender</label>
+                        <select id="avatarGender" onchange="updateAvatar()">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="slider-group">
+                        <label>Height: <span id="heightValue">1.75m</span></label>
+                        <input type="range" class="slider" id="avatarHeight" min="1.5" max="2.0" step="0.05"
+                            value="1.75" oninput="updateAvatarHeight()">
+                    </div>
 
-        <label>Hair Color</label>
+                    <div class="slider-group">
+                        <label>Build: <span id="buildValue">Athletic</span></label>
+                        <input type="range" class="slider" id="avatarBuild" min="0" max="100" value="50"
+                            oninput="updateAvatarBuild()">
+                    </div>
 
-        <label>Clothing Style</label>
-            <option>Casual</option>
-            <option>Formal</option>
-            <option>Sporty</option>
-            <option>Gothic</option>
-            <option>Fantasy</option>
-            <option>Futuristic</option>
+                    <div class="slider-group">
+                        <label>Skin Tone:</label>
+                        <input type="color" class="color-picker" id="skinColor" value="#f4c2a1"
+                            onchange="updateSkinColor()">
+                    </div>
 
-        <!-- World Selector Panel -->
-         <h3>🌍 Virtual Worlds</h3>
-            🏖️
-            Paradise Island
-            🏙️
-            Neon City
-            🏰
-            Fantasy Kingdom
-            🚀
-            Space Station
-            🐠
-            Underwater City
-            🏔️
-            Mountain Peak
+                    <div class="select-group">
+                        <label>Hair Style</label>
+                        <select id="hairStyle" onchange="updateHairStyle()">
+                            <option value="short">Short</option>
+                            <option value="medium">Medium</option>
+                            <option value="long">Long</option>
+                            <option value="curly">Curly</option>
+                            <option value="braids">Braids</option>
+                            <option value="bald">Bald</option>
+                        </select>
+                    </div>
 
-            <h4>🚗 Transportation</h4>
-            🚗 Sports Car
-            🏍️ Motorcycle
-            ✈️ Private Jet
-            🐉 Dragon (VIP)
+                    <div class="slider-group">
+                        <label for="hairColor">Hair Color</label>
+                        <input type="color" class="color-picker" id="hairColor" value="#8b4513"
+                            onchange="updateHairColor()" aria-label="Hair Color">
+                    </div>
+
+                    <div class="select-group">
+                        <label>Clothing Style</label>
+                        <select id="clothingStyle" onchange="updateClothing()">
+                            <option value="casual">Casual</option>
+                            <option value="formal">Formal</option>
+                            <option value="sporty">Sporty</option>
+                            <option value="gothic">Gothic</option>
+                            <option value="fantasy">Fantasy</option>
+                            <option value="futuristic">Futuristic</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveAvatar()">💾 Save Avatar</button>
+                    <button class="btn btn-success" onclick="randomizeAvatar()">🎲 Randomize</button>
+                </div>
+            </div>
+
+            <!-- World Selector Panel -->
+            <div class="world-selector" id="worldPanel" style="display: none;">
+                <div class="panel-section">
+                    <h3 class="panel-title">🌍 Virtual Worlds</h3>
+
+
+                    <div class="world-grid">
+                        <div class="world-card active" onclick="teleportToWorld('paradise')">
+                            <span class="world-icon">🏖️</span>
+                            <div class="world-name">Paradise Island</div>
+                        </div>
+
+                        <div class="world-card" onclick="teleportToWorld('city')">
+                            <span class="world-icon">🏙️</span>
+                            <div class="world-name">Neon City</div>
+                        </div>
+
+                        <div class="world-card" onclick="teleportToWorld('fantasy')">
+                            <span class="world-icon">🏰</span>
+                            <div class="world-name">Fantasy Kingdom</div>
+                        </div>
+
+                        <div class="world-card" onclick="teleportToWorld('space')">
+                            <span class="world-icon">🚀</span>
+                            <div class="world-name">Space Station</div>
+                        </div>
+
+                        <div class="world-card" onclick="teleportToWorld('underwater')">
+                            <span class="world-icon">🐠</span>
+                            <div class="world-name">Underwater City</div>
+                        </div>
+
+                        <div class="world-card" onclick="teleportToWorld('mountain')">
+                            <span class="world-icon">🏔️</span>
+                            <div class="world-name">Mountain Peak</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #4ecdc4; margin-bottom: 10px;">🚗 Transportation</h4>
+                        <button class="btn btn-primary" onclick="spawnVehicle('car')">🚗 Sports Car</button>
+                        <button class="btn btn-primary" onclick="spawnVehicle('bike')">🏍️ Motorcycle</button>
+                        <button class="btn btn-primary" onclick="spawnVehicle('jet')">✈️ Private Jet</button>
+                        <button class="btn btn-gold" onclick="spawnVehicle('dragon')">🐉 Dragon (VIP)</button>
+                    </div>
+                </div>
+            </div>
 
             <!-- Adventure Quest Panel -->
-             <h3>⚔️ Active Quests</h3>
-             🏰 Explore the Castle
+            <div class="adventure-quest" id="questPanel" style="display: none;">
+                <div class="panel-section">
+                    <h3 class="panel-title">⚔️ Active Quests</h3>
 
-             Find the hidden treasure room
+                    <div class="quest-item">
+                        <div style="font-weight: bold; margin-bottom: 5px;">🏰 Explore the Castle</div>
+                        <div style="font-size: 0.9rem; color: #b0b0b0;">Find the hidden treasure room</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%;"></div>
+                        </div>
+                    </div>
 
-             💕 Find Your Soulmate
+                    <div class="quest-item">
+                        <div style="font-weight: bold; margin-bottom: 5px;">💕 Find Your Soulmate</div>
+                        <div style="font-size: 0.9rem; color: #b0b0b0;">Go on 3 successful dates</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 33%;"></div>
+                        </div>
+                    </div>
 
-             Go on 3 successful dates
+                    <div class="quest-item">
+                        <div style="font-weight: bold; margin-bottom: 5px;">🏠 Build Dream Home</div>
+                        <div style="font-size: 0.9rem; color: #b0b0b0;">Design and furnish your house</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 80%;"></div>
+                        </div>
+                    </div>
 
-             🏠 Build Dream Home
+                    <button class="btn btn-success" onclick="startNewQuest()">✨ Start New Quest</button>
+                </div>
+            </div>
 
-             Design and furnish your house
+            <!-- Dating & Social Panel -->
+            <div class="social-panel" id="socialPanel" style="display: none;">
+                <div class="panel-section">
+                    <h3 class="panel-title">💕 Dating Hub</h3>
 
-             ✨ Start New Quest
+                    <button class="btn btn-primary" onclick="findMatches()">🔍 Find Matches</button>
+                    <button class="btn btn-success" onclick="startVirtualDate()">🌹 Virtual Date</button>
+                    <button class="btn btn-gold" onclick="createFamily()">👨‍👩‍👧‍👦 Start Family</button>
 
-        <!-- Dating & Social Panel -->   
-            <h3>💕 Dating Hub</h3>
+                    <div class="chat-container" id="chatContainer">
+                        <div class="chat-message">
+                            <strong>Sarah:</strong> Want to explore the Fantasy Kingdom together? 🏰
+                        </div>
 
-            🔍 Find Matches
+                        <div class="chat-message">
+                            <strong>Alex:</strong> The sunset on Paradise Island is amazing! 🌅
+                        </div>
 
-            🌹 Virtual Date
+                        <div class="chat-message">
+                            <strong>Jordan:</strong> Anyone up for a dragon ride? 🐉
+                        </div>
+                    </div>
 
-            👨‍👩‍👧‍👦 Start Family
+                    <input type="text" class="chat-input" placeholder="Type your message..." id="chatInput"
+                        onkeypress="handleChatInput(event)">
+                </div>
+            </div>
 
-        <strong>Sarah:</strong> Want to explore the Fantasy Kingdom together? 🏰
+            <!-- Info Panel -->
+            <div class="info-panel" id="infoPanel">
+                <h2 style="margin-bottom: 15px;">🌟 Welcome to HeartQuest</h2>
 
-        <strong>Alex:</strong> The sunset on Paradise Island is amazing! 🌅
+                <p style="margin-bottom: 15px; line-height: 1.6;">
+                    Experience the ultimate virtual life where you can be anyone, go anywhere, and do anything!
+                    Create your perfect avatar, explore stunning worlds, find love, build your dream home,
+                    and embark on epic adventures.
+                </p>
 
-        <strong>Jordan:</strong> Anyone up for a dragon ride? 🐉
+                <button class="btn btn-primary" onclick="hideInfoPanel()">🚀 Start Your Journey</button>
+            </div>
 
-        Type your message...
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="levelStat">12</div>
+                    <div class="stat-label">Level</div>
+                </div>
 
-        <!-- Info Panel -->
-         <h2>🌟 Welcome to HeartQuest</h2>
+                <div class="stat-item">
+                    <div class="stat-value" id="xpStat">2,456</div>
+                    <div class="stat-label">XP</div>
+                </div>
 
-         <p>
-            Experience the ultimate virtual life where you can be anyone, go anywhere, and do anything! 
-            Create your perfect avatar, explore stunning worlds, find love, build your dream home, 
-            and embark on epic adventures.
-         </p>
+                <div class="stat-item">
+                    <div class="stat-value" id="coinsStat">$15,240</div>
+                    <div class="stat-label">V-Coins</div>
+                </div>
 
-         🚀 Start Your Journey
+                <div class="stat-item">
+                    <div class="stat-value" id="friendsStat">47</div>
+                    <div class="stat-label">Friends</div>
+                </div>
 
-    <!-- Stats Bar -->
-        Level
-
-        2,456
-
-        XP
-
-        $15,240
-
-        V-Coins
-
-        Friends
-
-        12
-
-        Matches    
+                <div class="stat-item">
+                    <div class="stat-value" id="matchesStat">12</div>
+                    <div class="stat-label">Matches</div>
+                </div>
+            </div>
+        </div>
 
 </body>
+
 </html>
