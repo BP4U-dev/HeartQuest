@@ -11,6 +11,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Babylon.js CDN -->
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+
+<!-- Ready Player Me Integration -->
+<script src="js/readyplayerme-avatars.js"></script>
 </head>
 
 <body>
@@ -111,6 +117,11 @@
 
                 <button class="btn btn-primary" onclick="saveAvatar()">💾 Save Avatar</button>
                 <button class="btn btn-success" onclick="randomizeAvatar()">🎲 Randomize</button>
+                <button class="btn btn-primary" onclick="game.openAvatarCreator()">
+    ✨ Create Realistic Avatar
+</button>
+<button class="btn btn-success" onclick="randomizeAvatar()">🎲 Randomize</button>
+<button class="btn btn-gold" onclick="game.openAvatarCreator()">✨ Create Realistic Avatar</button>
             </div>
         </div>
 
@@ -272,6 +283,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Add this button to your main dating site -->
+<button onclick="window.location.href='avatar.html'">
+    🎨 Create Avatar
+</button>
 
     <!-- JavaScript Files -->
     <script src="js/ui.js"></script>

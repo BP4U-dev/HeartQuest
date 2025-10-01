@@ -658,3 +658,28 @@ window.HeartQuest = {
     renderer,
     avatar
 };
+
+// Use the avatar config to show user's appearance
+function showUserAvatar(avatarConfig) {
+    // Create mini 3D scene or use avatar emoji
+    // Based on their saved preferences
+}
+
+// In your main site, get the saved avatar
+const savedAvatar = localStorage.getItem('loveConnect3D_avatar');
+if (savedAvatar) {
+    const avatarData = JSON.parse(savedAvatar);
+    console.log('User avatar:', avatarData);
+}
+
+let game;
+window.addEventListener('DOMContentLoaded', function() {
+    game = new HeartQuestGameWithRealisticAvatars('babylonCanvas');
+});
+
+// Load pre-made realistic avatars
+game.loadDemoAvatars();
+
+// Or load specific avatar URL
+game.loadAvatarFromUrl('https://models.readyplayer.me/YOUR_AVATAR_ID.gheartquest.readyplayer.melb');
+iframe.src = 'https://heartquest.readyplayer.me/avatar?frameApi';

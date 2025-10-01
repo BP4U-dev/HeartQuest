@@ -10,6 +10,20 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
+
+# Unity project in HeartQuest subfolder
+HeartQuest/[Ll]ibrary/
+HeartQuest/[Tt]emp/
+HeartQuest/[Oo]bj/
+HeartQuest/[Bb]uild/
+HeartQuest/[Bb]uilds/
+HeartQuest/[Ll]ogs/
+HeartQuest/[Uu]ser[Ss]ettings/
+HeartQuest/*.csproj
+HeartQuest/*.sln
+HeartQuest/*.suo
+HeartQuest/*.user
+HeartQuest/.vs/
 *.log
 
 # By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
@@ -97,3 +111,20 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# Ignore build and system folders
+bin/
+obj/
+.vs/
+*.dll
+*.exe
+*.pdb
+*.user
+*.suo
+
+# Ignore node modules if using JS packages
+node_modules/
+
+# Ignore VS Code settings
+.vscode/
+
